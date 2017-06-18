@@ -1,0 +1,139 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fullscreen init</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" type="text/css" href="../Scripts/dhtmlx/codebase/fonts/font_roboto/roboto.css" />
+    <link rel="stylesheet" type="text/css" href="../Scripts/dhtmlx/codebase/dhtmlx.css" />
+    <script src="../Scripts/dhtmlx/codebase/dhtmlx.js"></script>
+    <script src="../Scripts/konva/konva.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+            overflow: hidden;
+            background-color: #F0F0F0;
+        }
+    </style>
+    <script>
+        var myLayout;
+        var com1DataView = {};
+        var com2DataView = {};
+        var myTabbar;
+
+        function loadDataView(dataView, id) {
+            dataView.load("../Command/CommandList/" + id , "json");
+        }
+
+        function createDataView(layoutCell) {
+            // создать DataView
+            return layoutCell.attachDataView({
+                type: {
+                    template: "<span class='dv_name'>#patronymic#</span><br/>#name# #surname#<br/> #position#",
+                    padding: 5,
+                    height: 70,
+                    width: 165
+                },
+                drag: true,
+                select: true
+            });
+        }
+
+        function doOnLoad() {
+            myTabbar = new dhtmlXTabBar({
+                parent: document.body,
+                tabs: [
+                    { id: "a1", text: "Подбор комманды", active: true },
+                    { id: "a2", text: "Чемпионат" },
+                    { id: "a3", text: "Настройки" }
+                ]
+            });
+            myLayout = myTabbar.tabs("a1").attachLayout({
+                pattern: "3U",
+                cells: [
+                    { id: "a", text: "Команда 1", collapsed_text: "Команда 1" },
+                    { id: "b", text: "Команда 2", collapsed_text: "Команда 2" },
+                    { id: "c", text: "Матч" }
+                ]
+            });
+
+            myLayout.cells("a").attachHTMLString("<span class='cell_text'>Custom collapsed text here</span>");
+            myLayout.cells("b").attachHTMLString("<span class='cell_text'>Custom collapsed text here</span>");
+            myLayout.cells("c").appendObject("objToAppend4");
+            createField();
+            com1DataView = createDataView(myLayout.cells("a"));
+            com2DataView = createDataView(myLayout.cells("b"));
+            loadDataView(com1DataView, 1);
+            loadDataView(com2DataView, 2);
+
+        }
+
+        var stage;
+        var layer; 
+
+        function createField() {
+            // first we need to create a stage
+            var width = window.innerWidth;
+            var height = window.innerHeight;
+            stage = new Konva.Stage({
+                container: 'objToAppend4',   // id of container <div>
+                width: width,
+                height: height
+            });
+            // then create layer
+            layer = new Konva.Layer();
+           
+            // add the layer to the stage
+            createFlor();
+            createCircle();
+            stage.add(layer);
+       //     
+            
+        }
+
+        function createCircle() {
+            // create our shape
+            var circle = new Konva.Circle({
+                x: 90,//stage.getWidth() / 2,
+                y: 90,//stage.getHeight() / 2,
+                radius: 70,
+                fill: 'red',
+                stroke: 'black',
+                strokeWidth: 4
+            });
+            circle.setZIndex(3);
+            // add the shape to the layer
+            layer.add(circle);
+        }
+
+        function createFlor() {
+            
+            var imageObj = new Image();
+            imageObj.onload = function () {
+                var yoda = new Konva.Image({
+                    x: 0,
+                    y: 0,
+                    image: imageObj,
+                    //width: 500,
+                    //height: 590
+                });
+                // add the shape to the layer
+                yoda.setZIndex(1);
+                layer.add(yoda);
+                // add the layer to the stage
+                //stage.add(layer);
+            };
+            imageObj.src = '/Content/img/floor.jpg';
+           
+        }
+    </script>
+</head>
+<body onload="doOnLoad();">
+    <div id="objToAppend4">sss</div>
+</body>
+</html>
